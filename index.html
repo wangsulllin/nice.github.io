@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- 强制手机禁止缩放、完美适配移动端 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>奈汐半岛民宿｜手机选房预订</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,"PingFang SC",Microsoft YaHei}
+:root{
+    --白底色:#fffcf9;
+    --主棕:#6b4b35;
+    --浅咖:#d8c8b8;
+    --文字深:#332a23;
+    --阴影:0 4px 12px rgba(107,75,53,0.09);
+}
+body{background:var(--白底色);color:var(--文字深);line-height:1.7}
+
+/* 导航 手机精简版 */
+header{
+    position:sticky;top:0;z-index:999;
+    background:var(--白底色);
+    box-shadow:var(--阴影);
+    padding:14px 5%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.logo{font-size:22px;letter-spacing:2px;color:var(--主棕);font-weight:600}
+/* 手机端直接隐藏顶部导航文字，避免拥挤 */
+.nav-pc{display:none}
+
+/* 首屏横幅 手机全屏高度 */
+.banner{
+    width:100%;
+    height:55vh;
+    background:url("img/公共区域/微信图片_20260716021013_12_24.jpg") center/cover no-repeat;
+    display:flex;flex-direction:column;
+    justify-content:center;align-items:center;
+    position:relative;
+}
+.banner::before{
+    content:"";position:absolute;inset:0;background:rgba(0,0,0,0.42)
+}
+.banner-text{z-index:2;color:#fff;text-align:center;padding:0 6%}
+.banner-text h1{font-size:28px;letter-spacing:3px;margin-bottom:10px}
+.banner-text p{font-size:15px;opacity:0.9}
+
+/* 通用区块容器 手机左右留边 */
+.container{width:92%;margin:0 auto;padding:60px 0}
+.section-title{
+    text-align:center;font-size:24px;color:var(--主棕);margin-bottom:8px
+}
+.line{width:50px;height:2px;background:var(--浅咖);margin:10px auto 35px}
+
+/* 民宿介绍 手机上下排版 */
+.intro{display:flex;flex-direction:column;gap:30px}
+.intro-img{width:100%;height:260px;border-radius:12px;object-fit:cover;box-shadow:var(--阴影)}
+.intro-text h3{font-size:20px;color:var(--主棕);margin-bottom:14px}
+.intro-text p{font-size:14px;color:#444;margin-bottom:12px}
+
+/* 公共设施 手机2列网格 */
+.facility-bg{background:#fff8f2;padding:50px 0}
+.facility-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px
+}
+.facility-card{
+    background:#fff;padding:18px;border-radius:10px;box-shadow:var(--阴影)
+}
+.facility-card h4{font-size:16px;color:var(--主棕);margin-bottom:8px}
+.facility-card p{font-size:13px;color:#555}
+
+/* 筛选区域 手机竖排，按钮加宽适合手指点击 */
+.filter-box{
+    background:#fff;padding:20px;border-radius:12px;box-shadow:var(--shadow);margin-bottom:40px
+}
+.filter-group{margin-bottom:16px}
+.filter-group span{
+    display:block;margin-bottom:10px;color:var(--主棕);font-weight:500;font-size:15px
+}
+.filter-btn{
+    padding:9px 12px;margin:0 4px 8px 0;
+    border:1px solid var(--浅咖);background:transparent;
+    color:var(--主棕);border-radius:6px;font-size:14px;
+    min-width:72px;cursor:pointer;
+}
+.filter-btn.active{background:var(--主棕);color:#fff;border-color:var(--主棕)}
+
+/* 客房列表 手机单列铺满，大屏双列 */
+.room-list{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:32px
+}
+@media (min-width:720px){
+    .room-list{grid-template-columns:1fr 1fr}
+    .nav-pc{display:flex;gap:28px}
+    .nav-pc a{color:var(--主棕);text-decoration:none;font-size:14px}
+}
+
+/* 单间客房卡片 手机适配 */
+.room-card{
+    background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shadow)
+}
+.room-pic{width:100%;height:220px;position:relative}
+.room-pic img{width:100%;height:100%;object-fit:cover}
+.tag{
+    position:absolute;top:10px;left:10px;
+    background:var(--主棕);color:#fff;
+    font-size:12px;padding:4px 10px;border-radius:4px
+}
+.room-info{padding:18px}
+.room-name{font-size:17px;color:var(--主棕);font-weight:600;margin-bottom:8px}
+.room-desc{font-size:13px;color:#555;min-height:62px;margin-bottom:12px}
+.room-data{
+    display:flex;justify-content:space-between;
+    font-size:12px;color:#777;margin-bottom:14px
+}
+.price{display:flex;align-items:baseline;gap:8px}
+.old-price{font-size:13px;text-decoration:line-through;color:#aaa}
+.new-price{font-size:20px;color:#b93838;font-weight:bold}
+.btn-wrap{display:flex;gap:10px;margin-top:16px}
+.btn-wrap a{
+    flex:1;text-align:center;padding:10px 0;
+    border-radius:8px;text-decoration:none;font-size:14px;
+    /* 按钮高度加大，手机好点击 */
+    min-height:44px;display:flex;align-items:center;justify-content:center;
+}
+.btn-img{border:1px solid var(--主棕);color:var(--主棕)}
+.btn-video{background:var(--主棕);color:#fff}
+
+/* 弹窗 手机全屏适配 */
+.modal{
+    display:none;position:fixed;inset:0;
+    background:rgba(0,0,0,0.9);z-index:1000;
+    align-items:center;justify-content:center;padding:15px
+}
+.close{
+    position:absolute;top:20px;right:20px;
+    font-size:36px;color:#fff;cursor:pointer
+}
+.modal-media{
+    max-width:100%;max-height:85vh;width:auto;height:auto
+}
+/* 轮播左右箭头 */
+.prev,.next{
+    position:absolute;
+    top:50%;
+    font-size:36px;
+    color:#ffffff;
+    padding:8px 14px;
+    cursor:pointer;
+    transform:translateY(-50%);
+    user-select:none;
+}
+.prev{left:10px;}
+.next{right:10px;}
+/* 底部页码 */
+.page-num{
+    position:absolute;
+    bottom:25px;
+    color:#fff;
+    font-size:14px;
+}
+
+/* 页脚 手机居中排版 */
+footer{
+    background:var(--主棕);color:#fff;text-align:center;
+    padding:45px 6%;margin-top:70px
+}
+footer h3{font-size:22px;margin-bottom:16px;letter-spacing:1px}
+footer p{font-size:15px;margin:8px 0;opacity:0.9}
+</style>
+</head>
+<body>
+<header>
+    <div class="logo">奈汐半岛民宿</div>
+    <div class="nav-pc">
+        <a href="#intro">民宿概况</a>
+        <a href="#facility">配套区域</a>
+        <a href="#rooms">选房列表</a>
+        <a href="#contact">预订方式</a>
+    </div>
+</header>
+
+<section class="banner">
+    <div class="banner-text">
+        <h1>奈汐半岛 · 临海民宿</h1>
+        <p>25间一线海景客房 手机一键选房</p>
+    </div>
+</section>
+
+<section id="intro" class="container">
+    <h2 class="section-title">民宿全貌介绍</h2>
+    <div class="line"></div>
+    <div class="intro">
+        <img class="intro-img" src="img/公共区域/微信图片_20260716021016_15_24.jpg">
+        <div class="intro-text">
+            <h3>半岛临海视野，户户面朝大海</h3>
+            <p>民宿整体共3层，总计25间客房，全部朝向海岸线无遮挡海景。整体装修纯白基底搭配原木棕软装，简约高级。</p>
+            <p>自带庭院、顶层观海露台，步行可达沙滩，适合情侣、家庭、闺蜜小团体出游。</p>
+        </div>
+    </div>
+</section>
+
+<section id="facility" class="facility-bg">
+    <div class="container">
+        <h2 class="section-title">公共区域&配套设施</h2>
+        <div class="line"></div>
+        <div class="facility-grid">
+            <div class="facility-card"><h4>顶层观海露台</h4><p>观景、烧烤、看日落拍照打卡</p></div>
+            <div class="facility-card"><h4>入户庭院</h4><p>小院茶歇休闲，安静放松</p></div>
+            <div class="facility-card"><h4>公共厨房</h4><p>厨具冰箱齐全，可加工海鲜</p></div>
+            <div class="facility-card"><h4>洗衣烘干区</h4><p>洗衣机烘干机免费使用</p></div>
+            <div class="facility-card"><h4>娱乐区</h4><p>麻将、投影、桌游休闲</p></div>
+            <div class="facility-card"><h4>基础服务</h4><p>WiFi、停车位、24小时前台</p></div>
+        </div>
+    </div>
+</section>
+
+<section id="rooms" class="container">
+    <h2 class="section-title">客房在线选房</h2>
+    <div class="line"></div>
+
+    <div class="filter-box">
+        <div class="filter-group">
+            <span>楼层筛选</span>
+            <button class="filter-btn floor active" data-floor="all">全部</button>
+            <button class="filter-btn floor" data-floor="1">1楼</button>
+            <button class="filter-btn floor" data-floor="2">2楼</button>
+            <button class="filter-btn floor" data-floor="3">3楼</button>
+        </div>
+        <div class="filter-group">
+            <span>床型筛选</span>
+            <button class="filter-btn bed active" data-bed="all">全部</button>
+            <button class="filter-btn bed" data-bed="king">大床房</button>
+            <button class="filter-btn bed" data-bed="twin">双床房</button>
+            <button class="filter-btn bed" data-bed="four">四床房</button>
+        </div>
+    </div>
+
+    <div class="room-list" id="roomWrap">
+        <!-- 模板房间1 1楼大床房 -->
+        <div class="room-card" data-floor="1" data-bed="king">
+            <div class="room-pic">
+                <span class="tag">2楼·海景大床房</span>
+                <img src="img/大床/1号房间/微信图片_2026-07-16_013826_911.jpg">
+            </div>
+            <div class="room-info">
+                <div class="room-name">1号房间</div>
+                <div class="room-desc">
+侧窗海景大床房｜房间配备1.8m×2m超大舒适软包大床，床垫柔软亲肤，睡眠体验极佳。房间采用侧窗全景海景设计，采光通透、视野温柔治愈，躺在床上即可静看碧海蓝天、海岸风光。
+独立干湿分离卫浴、高速WiFi、遮光窗帘、全套洗漱用品、精致软装一应俱全。适合情侣度假、闺蜜轻旅行，安静惬意，既能看海，又能独享小院静谧风光。</div>
+                <div class="room-data">
+                    <span>32㎡ | 可住2人</span>
+                    <span>楼层：1F</span>
+                </div>
+                <div class="price">
+                    <span class="old-price">758</span>
+                    <span class="new-price">488/晚</span>
+                </div>
+                <div class="btn-wrap">
+                    <!-- 数组内填写该房间所有图片相对路径，英文逗号分隔 -->
+                    <a href="javascript:openImg(['img/大床/1号房间/微信图片_2026-07-16_013826_911.jpg','img/大床/1号房间/微信图片_2026-07-16_013802_656.jpg','img/大床/1号房间/微信图片_2026-07-16_013820_053.jpg'])" class="btn-img">查看多图</a>
+                    <a href="javascript:openVideo('img/大床/1号房间/微信视频2026-07-16_013812_586.mp4')" class="btn-video">房间视频</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 模板房间2 2楼双床房 -->
+        <div class="room-card" data-floor="2" data-bed="twin">
+            <div class="room-pic">
+                <span class="tag">2楼·海景双床房</span>
+                <img src="房间2主图链接">
+            </div>
+            <div class="room-info">
+                <div class="room-name">汐漾203海景双床房</div>
+                <div class="room-desc">中层开阔海景，两张1.2m单人床，适合朋友结伴，大玻璃窗观景，收纳空间充足。</div>
+                <div class="room-data">
+                    <span>35㎡ | 可住2人</span>
+                    <span>楼层：2F</span>
+                </div>
+                <div class="price">
+                    <span class="old-price">429</span>
+                    <span class="new-price">359/晚</span>
+                </div>
+                <div class="btn-wrap">
+                    <a href="javascript:openImg(['房间2图1.jpg','房间2图2.jpg'])" class="btn-img">查看多图</a>
+                    <a href="javascript:openVideo('房间2视频.mp4')" class="btn-video">房间视频</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 模板房间3 3楼四床房 -->
+        <div class="room-card" data-floor="3" data-bed="four">
+            <div class="room-pic">
+                <span class="tag">3楼·顶层四床房</span>
+                <img src="房间3主图链接">
+            </div>
+            <div class="room-info">
+                <div class="room-name">汐观307海景四床房</div>
+                <div class="room-desc">民宿顶层视野最佳，两张1.5m大床，带小阳台，适合家庭四口出行，空间宽敞带休闲区。</div>
+                <div class="room-data">
+                    <span>48㎡ | 可住4人</span>
+                    <span>楼层：3F</span>
+                </div>
+                <div class="price">
+                    <span class="old-price">699</span>
+                    <span class="new-price">589/晚</span>
+                </div>
+                <div class="btn-wrap">
+                    <a href="javascript:openImg(['房间3图1.jpg','房间3图2.jpg'])" class="btn-img">查看多图</a>
+                    <a href="javascript:openVideo('房间3视频.mp4')" class="btn-video">房间视频</a>
+                </div>
+            </div>
+        </div>
+        <!-- 剩余22间直接复制整块room-card修改参数即可 -->
+    </div>
+</section>
+
+<!-- 多图轮播弹窗结构 -->
+<div class="modal" id="imgPop">
+    <span class="close" onclick="closePop()">&times;</span>
+    <span class="prev" onclick="prevImg()">&lt;</span>
+    <img class="modal-media" id="imgShow">
+    <span class="next" onclick="nextImg()">&gt;</span>
+    <div class="page-num" id="pageNum"></div>
+</div>
+
+<!-- 视频弹窗 -->
+<div class="modal" id="videoPop">
+    <span class="close" onclick="closePop()">&times;</span>
+    <video class="modal-media" id="vidShow" controls></video>
+</div>
+
+<footer id="contact">
+    <h3>奈汐半岛民宿 预订咨询</h3>
+    <p>预订电话：133 0459 2747（微信同号）</p>
+    <p>地址：XX市XX半岛海岸度假区</p>
+    <p>可发定位+全部房型实拍</p>
+</footer>
+
+<script>
+// 多图轮播全局变量
+let imgList = [];
+let currentIndex = 0;
+
+// 打开图集，传入图片数组
+function openImg(imgArr){
+    imgList = imgArr;
+    currentIndex = 0;
+    document.getElementById('imgPop').style.display = 'flex';
+    renderImg();
+}
+// 渲染当前图片与页码
+function renderImg(){
+    document.getElementById('imgShow').src = imgList[currentIndex];
+    document.getElementById('pageNum').innerText = `${currentIndex + 1}/${imgList.length}`;
+}
+// 上一张
+function prevImg(){
+    if(currentIndex > 0){
+        currentIndex --;
+        renderImg();
+    }
+}
+// 下一张
+function nextImg(){
+    if(currentIndex < imgList.length - 1){
+        currentIndex ++;
+        renderImg();
+    }
+}
+
+// 打开视频
+function openVideo(src){
+    document.getElementById('videoPop').style.display='flex';
+    document.getElementById('vidShow').src=src;
+}
+// 关闭所有弹窗
+function closePop(){
+    document.getElementById('imgPop').style.display='none';
+    document.getElementById('videoPop').style.display='none';
+    document.getElementById('vidShow').pause();
+}
+
+//筛选逻辑
+let fl='all',bd='all';
+const rooms=document.querySelectorAll('.room-card');
+const fBtns=document.querySelectorAll('.floor');
+const bBtns=document.querySelectorAll('.bed');
+
+fBtns.forEach(btn=>{
+    btn.onclick=()=>{
+        fBtns.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        fl=btn.dataset.floor;
+        filter();
+    }
+})
+bBtns.forEach(btn=>{
+    btn.onclick=()=>{
+        bBtns.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        bd=btn.dataset.bed;
+        filter();
+    }
+})
+
+function filter(){
+    rooms.forEach(item=>{
+        let fOk=fl==='all'||item.dataset.floor===fl;
+        let bOk=bd==='all'||item.dataset.bed===bd;
+        item.style.display=fOk&&bOk?'block':'none';
+    })
+}
+</script>
+</body>
+</html>
